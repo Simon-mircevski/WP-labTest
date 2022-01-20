@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>WP Exam</title>
+</head>
+<body>
+
+<div>
+    <!-- The form below should invoke the method NewsController.showNews -->
+    <form id="filter-form">
+        <label for="price">Price</label>
+        <input name="price" id="price" type="number"/>
+        <label for="type">Type</label>
+        <select id="type" name="type">
+            <option value="">All</option>
+            <option th:each="newsType: ${types}" th:value="${newsType.name()}" th:text="${newsType.name()}">
+            </option>
+            <!-- For each type you should have one <option> like below  -->
+        </select>
+        <button id="filter" type="submit">Filter</button>
+    </form>
+    <div>
+        <!-- NewsController.showAdd -->
+        <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+            <a href="/news/add" class="add-item">
+                Add news
+            </a>
+        </th:block>
+    </div>
+    <table>
+        <tr>
+            <th>Match name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Likes</th>
+            <th>Actions</th>
+        </tr>
+        <!-- For each news you should have one <tr> like below -->
+        <tr th:each="newsList:${news}" class="item">
+            <td th:text="${newsList.name}"></td>
+            <td th:text="${newsList.description}"></td>
+            <td th:text="${newsList.price}"></td>
+            <td th:text="${newsList.type}"></td>
+            <td th:text="${newsList.category.name}"></td>
+            <td th:text="${newsList.likes}"></td>
+            <td>
+                    <!-- NewsController.delete -->
+                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                    <form th:method="POST" th:action="@{'/news/{id}/delete' (id=${newsList.getId()})}">
+
+                        <button type="submit" class="delete-item">Delete</button>
+                    </form>
+                </th:block>
+
+                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                <!-- NewsController.showEdit -->
+                    <a th:href="@{'/news/{id}/edit' (id=${newsList.getId()})}" class="edit-item">Edit</a>
+                    <!-- NewsController.follow -->
+                </th:block>
+                    <th:block sec:authorize="hasRole('ROLE_USER')">
+                    <form th:method="POST" th:action="@{'/news/{id}/like' (id = ${newsList.getId()})}">
+                        <button type="submit" class="like-item">Like</button>
+                    </form>
+                    </th:block>
+
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div>
+    <ul id="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+</body>
+</html>
